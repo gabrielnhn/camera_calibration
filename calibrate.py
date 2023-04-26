@@ -64,6 +64,6 @@ if __name__ == "__main__":
 
     cam_calib = {}
 
-    capture = cv2.VideoCapture(2)
+    capture = cv2.VideoCapture(0)
 
     cam_calibrate(capture, cam_calib)

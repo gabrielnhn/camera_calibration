@@ -1,11 +1,12 @@
 import cv2
 import numpy as np
 import pickle
+from datetime import datetime as dt
 
 calib_cam = pickle.load(open("calib_cam.pkl", "rb"))
 
 
-capture = cv2.VideoCapture(2)
+capture = cv2.VideoCapture(0)
 
 retval, img = capture.read()
 
@@ -26,7 +27,9 @@ while retval:
     output = np.vstack((img, dst))
 
     cv2.imshow("BRUH", output)
-    cv2.waitKey(3)
+    if cv2.waitKey(3) & 0xFF == ord('s'):
+        cv2.imwrite(f"bruh{dt.now()}.png", output)
+
 
     retval, img = capture.read()
 
