@@ -6,7 +6,7 @@ import glob
 
 calib_cam = pickle.load(open("calib_cam.pkl", "rb"))
 
-images = glob.glob('*.jpg')
+images = glob.glob('./raw/*.jpg')
 
 for fname in images:
     img = cv2.imread(fname)
@@ -24,6 +24,6 @@ for fname in images:
 
     output = np.vstack((img, dst))
 
-    cv2.imshow("BRUH", output)
+    cv2.imshow("output", output)
     if cv2.waitKey(0) & 0xFF == ord('s'):
-        cv2.imwrite(f"undistorted{dt.now()}.png", output)
+        cv2.imwrite(f"UNDISTORTION_{fname.split('_')[1]}", output)

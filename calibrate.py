@@ -41,12 +41,15 @@ def cam_calibrate(images, cam_calib):
                 img_points.append(corners)
                 obj_points.append(pts)
                 frames.append(frame)
+                cv2.imwrite('./results/' + fname.split('_')[1], frame_copy)
             elif cv2.waitKey(0) & 0xFF == ord('c'):
                 continue
             elif cv2.waitKey(0) & 0xFF == ord('q'):
                 print("Calibrating camera...")
                 cv2.destroyAllWindows()
                 break
+        else:
+            cv2.imwrite('./results/' + fname.split('_')[1], frame_copy)
 
     # compute calibration matrices
 
@@ -71,6 +74,6 @@ if __name__ == "__main__":
 
     cam_calib = {}
 
-    images = glob.glob('*.jpg')
+    images = glob.glob('./raw/*.jpg')
 
     cam_calibrate(images, cam_calib)
