@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
 import pickle
+import glob
 
-def cam_calibrate(cap, cam_calib):
+def cam_calibrate(images, cam_calib):
 
     # termination criteria
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -15,31 +16,37 @@ def cam_calibrate(cap, cam_calib):
     obj_points = []  # 3d point in real world space
     img_points = []  # 2d points in image plane.
     frames = []
-    while True:
-        ret, frame = cap.read()
+    for fname in images:
+        frame = cv2.imread(fname)
+        ret = frame is not None
+
+        if not ret:
+            print("Calibrating camera...")
+            cv2.destroyAllWindows()
+            break
+
         frame_copy = frame.copy()
 
         corners = []
-        if ret:
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            retc, corners = cv2.findChessboardCorners(gray, (9, 6), None)
-            if retc:
-                cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
-                # Draw and display the corners
-                cv2.drawChessboardCorners(frame_copy, (9, 6), corners, ret)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        retc, corners = cv2.findChessboardCorners(gray, (9, 6), None)
+        if retc:
+            cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+            # Draw and display the corners
+            cv2.drawChessboardCorners(frame_copy, (9, 6), corners, ret)
 
-                cv2.imshow('points', frame_copy)
-                # s to save, c to continue, q to quit
-                if cv2.waitKey(0) & 0xFF == ord('s'):
-                    img_points.append(corners)
-                    obj_points.append(pts)
-                    frames.append(frame)
-                elif cv2.waitKey(0) & 0xFF == ord('c'):
-                    continue
-                elif cv2.waitKey(0) & 0xFF == ord('q'):
-                    print("Calibrating camera...")
-                    cv2.destroyAllWindows()
-                    break
+            cv2.imshow('points', frame_copy)
+            # s to save, c to continue, q to quit
+            if cv2.waitKey(0) & 0xFF == ord('s'):
+                img_points.append(corners)
+                obj_points.append(pts)
+                frames.append(frame)
+            elif cv2.waitKey(0) & 0xFF == ord('c'):
+                continue
+            elif cv2.waitKey(0) & 0xFF == ord('q'):
+                print("Calibrating camera...")
+                cv2.destroyAllWindows()
+                break
 
     # compute calibration matrices
 
@@ -64,6 +71,6 @@ if __name__ == "__main__":
 
     cam_calib = {}
 
-    capture = cv2.VideoCapture(0)
+    images = glob.glob('*.jpg')
 
-    cam_calibrate(capture, cam_calib)
+    cam_calibrate(images, cam_calib)

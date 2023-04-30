@@ -2,15 +2,14 @@ import cv2
 import numpy as np
 import pickle
 from datetime import datetime as dt
+import glob
 
 calib_cam = pickle.load(open("calib_cam.pkl", "rb"))
 
+images = glob.glob('*.jpg')
 
-capture = cv2.VideoCapture(0)
-
-retval, img = capture.read()
-
-while retval:
+for fname in images:
+    img = cv2.imread(fname)
     mtx = calib_cam["mtx"]
     dist = calib_cam["dist"]
 
@@ -23,13 +22,8 @@ while retval:
     # x, y, w, h = roi
     # dst = dst[y:y+h, x:x+w]
 
-
     output = np.vstack((img, dst))
 
     cv2.imshow("BRUH", output)
-    if cv2.waitKey(3) & 0xFF == ord('s'):
-        cv2.imwrite(f"bruh{dt.now()}.png", output)
-
-
-    retval, img = capture.read()
-
+    if cv2.waitKey(0) & 0xFF == ord('s'):
+        cv2.imwrite(f"undistorted{dt.now()}.png", output)
